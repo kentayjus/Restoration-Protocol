@@ -145,7 +145,7 @@
             .start-btn { font-size: 1.0rem; padding: 12px 24px; }
         }
 
-        /* ── Existing game styles (abbreviated) ── */
+        /* ── Biome Health Bar ── */
         #biome-health-container {
             width: 100%;
             height: 32px;
@@ -176,6 +176,8 @@
             z-index: 1;
             pointer-events: none;
         }
+
+        /* ── Story Container ── */
         #story-container {
             width: 100%;
             text-align: center;
@@ -193,6 +195,7 @@
         #story-container.bad { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); }
         #story-container.neutral { background: rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.2); }
 
+        /* ── Anomaly Panel ── */
         #anomaly-panel {
             background: rgba(15, 23, 42, .6);
             border: 1px solid rgba(59, 130, 246, .12);
@@ -294,6 +297,7 @@
             padding: 4px 0;
         }
 
+        /* ── Species Registry ── */
         #species-registry-bar {
             width: 100%;
             background: rgba(8, 14, 26, 0.7);
@@ -346,6 +350,7 @@
             font-size: 1.2rem;
         }
 
+        /* ── Main Layout ── */
         #main-row { display: flex; gap: 20px; align-items: stretch; }
         #left-panel {
             width: 300px;
@@ -356,7 +361,7 @@
             padding: 16px 18px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
 
         #left-energy-display {
@@ -374,42 +379,102 @@
         }
         #left-energy-display span { font-size: 2.6rem; }
 
-        .left-gauge { display: flex; flex-direction: column; gap: 2px; }
-        .left-gauge-header { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+        /* ── Enhanced Action Buttons ── */
+        .left-gauge { display: flex; flex-direction: column; gap: 4px; }
+        .left-gauge-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+
         .action-btn {
-            background: rgba(30, 41, 59, .7);
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-weight: 700;
+            font-size: 0.8rem;
             color: #e2e8f0;
-            border: 1px solid rgba(59, 130, 246, .3);
-            padding: 5px 10px;
-            border-radius: 6px;
-            font-weight: 600;
             cursor: pointer;
             width: 100%;
             position: relative;
-            font-size: 0.75rem;
+            overflow: hidden;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
             font-family: inherit;
             text-align: left;
-            height: 30px;
-        }
-        .action-btn .btn-progress {
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            background: rgba(59, 130, 246, .2);
-            z-index: 1;
-            transition: width 1s linear;
-            border-radius: 6px;
+            height: 34px;
+            display: flex;
+            align-items: center;
         }
         .action-btn .btn-content {
             position: relative;
             z-index: 2;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
+            width: 100%;
         }
-        .action-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-        .action-btn:not(:disabled):hover { background: rgba(51, 65, 85, .9); }
+        .action-btn .btn-content span {
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+        }
+        .action-btn .btn-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.05);
+            z-index: 1;
+            transition: width 1s linear;
+            border-radius: 8px;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Air Button */
+        #btn-air {
+            border-color: rgba(148, 163, 184, 0.5);
+        }
+        #btn-air .btn-progress { background: rgba(148, 163, 184, 0.2); }
+        #btn-air:hover:not(:disabled) {
+            border-color: rgba(148, 163, 184, 0.9);
+            background: rgba(51, 65, 85, 0.9);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(148, 163, 184, 0.2);
+        }
+
+        /* Water Button */
+        #btn-water {
+            border-color: rgba(56, 189, 248, 0.5);
+        }
+        #btn-water .btn-progress { background: rgba(56, 189, 248, 0.2); }
+        #btn-water:hover:not(:disabled) {
+            border-color: rgba(56, 189, 248, 0.9);
+            background: rgba(14, 116, 144, 0.8);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.2);
+        }
+
+        /* Soil Button */
+        #btn-soil {
+            border-color: rgba(217, 119, 6, 0.5);
+        }
+        #btn-soil .btn-progress { background: rgba(217, 119, 6, 0.2); }
+        #btn-soil:hover:not(:disabled) {
+            border-color: rgba(217, 119, 6, 0.9);
+            background: rgba(120, 65, 0, 0.8);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.2);
+        }
+
+        /* Press & Disabled States */
+        .action-btn:active:not(:disabled) {
+            transform: scale(0.97) !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .action-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            filter: grayscale(0.4);
+            transform: none !important;
+            box-shadow: none !important;
+            border-color: rgba(59, 130, 246, 0.15) !important;
+        }
 
         .gauge-val {
             font-weight: 700;
@@ -452,6 +517,7 @@
             letter-spacing: .04em;
         }
 
+        /* ── Viewport ── */
         #viewport {
             flex: 1;
             min-height: 420px;
@@ -482,6 +548,7 @@
         }
         @keyframes floatCreature { 0% { transform: translateY(0); } 100% { transform: translateY(-16px); } }
 
+        /* ── Modals ── */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -602,6 +669,7 @@
         }
         .detail-close-btn:hover { background: rgba(51, 65, 85, .9); transform: scale(1.04); }
 
+        /* ── Responsive ── */
         @media (max-width: 768px) {
             #game-container { padding: 16px; }
             #main-row { flex-direction: column; }
@@ -766,33 +834,26 @@
             if (charIndex < currentLine.length) {
                 typewriterEl.textContent += currentLine.charAt(charIndex);
                 charIndex++;
-                setTimeout(typeNextChar, 30); // typing speed
+                setTimeout(typeNextChar, 30);
             } else {
-                // Line complete: add line break and move to next
                 typewriterEl.textContent += '\n';
                 lineIndex++;
                 charIndex = 0;
-                // If there are more lines, continue after a pause
                 if (lineIndex < storyLines.length) {
                     setTimeout(typeNextChar, 400);
                 }
             }
         }
 
-        // Start typewriter after page load
         window.addEventListener('load', function() {
             setTimeout(typeNextChar, 600);
         });
 
-        // ── Start Button ──
         document.getElementById('start-btn').addEventListener('click', function() {
-            const overlay = document.getElementById('splash-overlay');
-            overlay.classList.add('hidden');
-            // Unmute any background audio if needed
-            // (no audio, so just proceed)
+            document.getElementById('splash-overlay').classList.add('hidden');
         });
 
-        // ── Game Script (same as before, with minor adjustments) ──
+        // ── Game Script ──
         const state = {
             energy: 40,
             toxicity: { air: 100, water: 100, soil: 100 },
@@ -880,7 +941,6 @@
 
         let currentSpecies = WORLDS[1].species;
 
-        // Core Loop
         setInterval(() => {
             if (!state.worldCompleted) {
                 state.energy = Math.min(200, state.energy + 1.0);
@@ -925,7 +985,6 @@
             checkLevelProgression();
         }, 1000);
 
-        // ── Game functions (same as before) ──
         function checkLevelProgression() {
             if (state.worldCompleted) return;
 
@@ -1261,7 +1320,6 @@
             populateRegistryModal();
         }
 
-        // Init
         window.onload = function() {
             document.getElementById('left-biome-name').textContent = WORLDS[1].name;
             document.getElementById('world-name-display').textContent = WORLDS[1].name;
