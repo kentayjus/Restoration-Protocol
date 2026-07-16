@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Planetary Terraformer & Collector</title>
+    <title>Restoration Protocol</title>
     <style>
         /* ── Reset & Base ── */
         * {
@@ -43,7 +43,109 @@
             overflow: hidden;
         }
 
-        /* ── Biome Health Bar ── */
+        /* ── Splash Overlay ── */
+        #splash-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            text-align: center;
+            background-size: cover;
+            background-position: center;
+            background-image: url('assets/raniramli-nature.gif');
+            background-color: #0b0f17;
+            transition: opacity 1s ease, visibility 1s ease;
+        }
+        #splash-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        #splash-overlay::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(6, 10, 18, 0.65);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 1;
+        }
+        .splash-content {
+            position: relative;
+            z-index: 2;
+            max-width: 720px;
+            padding: 20px;
+        }
+        .splash-title {
+            font-size: 4.5rem;
+            font-weight: 900;
+            color: #fbbf24;
+            text-shadow: 0 0 30px rgba(251, 191, 36, 0.5), 0 0 60px rgba(251, 191, 36, 0.2);
+            letter-spacing: 0.06em;
+            margin-bottom: 20px;
+            line-height: 1.1;
+        }
+        .splash-story {
+            font-size: 1.3rem;
+            font-weight: 400;
+            color: #e2e8f0;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            min-height: 4em;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+        }
+        .splash-story .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background: #fbbf24;
+            margin-left: 2px;
+            vertical-align: text-bottom;
+            animation: blink 0.8s step-end infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .start-btn {
+            background: linear-gradient(145deg, #fbbf24, #f59e0b);
+            border: none;
+            border-radius: 60px;
+            padding: 18px 48px;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #0b0f17;
+            cursor: pointer;
+            box-shadow: 0 8px 30px rgba(251, 191, 36, 0.4);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            font-family: inherit;
+            letter-spacing: 0.04em;
+        }
+        .start-btn:hover {
+            transform: scale(1.06);
+            box-shadow: 0 12px 40px rgba(251, 191, 36, 0.6);
+        }
+
+        @media (max-width: 768px) {
+            .splash-title { font-size: 3rem; }
+            .splash-story { font-size: 1.1rem; }
+            .start-btn { font-size: 1.3rem; padding: 14px 32px; }
+        }
+        @media (max-width: 480px) {
+            .splash-title { font-size: 2.2rem; }
+            .splash-story { font-size: 0.95rem; }
+            .start-btn { font-size: 1.0rem; padding: 12px 24px; }
+        }
+
+        /* ── Existing game styles (abbreviated) ── */
         #biome-health-container {
             width: 100%;
             height: 32px;
@@ -74,8 +176,6 @@
             z-index: 1;
             pointer-events: none;
         }
-
-        /* ── Story Container ── */
         #story-container {
             width: 100%;
             text-align: center;
@@ -93,7 +193,6 @@
         #story-container.bad { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); }
         #story-container.neutral { background: rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.2); }
 
-        /* ── Compact Anomaly Panel ── */
         #anomaly-panel {
             background: rgba(15, 23, 42, .6);
             border: 1px solid rgba(59, 130, 246, .12);
@@ -164,7 +263,6 @@
             margin-top: 2px;
             align-items: center;
         }
-
         .anomaly-action-btn {
             border: none;
             border-radius: 40px;
@@ -183,7 +281,6 @@
             white-space: nowrap;
         }
         .anomaly-action-btn:hover { transform: scale(1.04); }
-
         .anomaly-action-btn.anomaly-flare { background: linear-gradient(145deg, #f97316, #ea580c); border-color: #f97316; }
         .anomaly-action-btn.anomaly-catalyst { background: linear-gradient(145deg, #8b5cf6, #7c3aed); border-color: #a855f7; }
         .anomaly-action-btn.anomaly-tremor { background: linear-gradient(145deg, #d97706, #b45309); border-color: #b45309; }
@@ -197,7 +294,6 @@
             padding: 4px 0;
         }
 
-        /* ── Species Registry Bar ── */
         #species-registry-bar {
             width: 100%;
             background: rgba(8, 14, 26, 0.7);
@@ -250,7 +346,6 @@
             font-size: 1.2rem;
         }
 
-        /* ── Main Row ── */
         #main-row { display: flex; gap: 20px; align-items: stretch; }
         #left-panel {
             width: 300px;
@@ -357,7 +452,6 @@
             letter-spacing: .04em;
         }
 
-        /* ── Viewport ── */
         #viewport {
             flex: 1;
             min-height: 420px;
@@ -388,7 +482,6 @@
         }
         @keyframes floatCreature { 0% { transform: translateY(0); } 100% { transform: translateY(-16px); } }
 
-        /* ── Modals ── */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -469,7 +562,6 @@
         .species-card .stats .neg { color: #f87171; }
         .species-card .stats .neutral { color: #64748b; }
 
-        /* ── Species Detail Modal ── */
         #species-detail-modal .modal-content {
             max-width: 400px;
             text-align: center;
@@ -510,7 +602,6 @@
         }
         .detail-close-btn:hover { background: rgba(51, 65, 85, .9); transform: scale(1.04); }
 
-        /* ── Responsive ── */
         @media (max-width: 768px) {
             #game-container { padding: 16px; }
             #main-row { flex-direction: column; }
@@ -535,18 +626,27 @@
 </head>
 <body>
 
+    <!-- Splash Overlay -->
+    <div id="splash-overlay">
+        <div class="splash-content">
+            <div class="splash-title">Restoration Protocol</div>
+            <div class="splash-story" id="story-text">
+                <span id="typewriter"></span><span class="cursor"></span>
+            </div>
+            <button class="start-btn" id="start-btn">▶ Start Game</button>
+        </div>
+    </div>
+
+    <!-- Game Container -->
     <div id="game-container">
 
-        <!-- Biome Health Bar -->
         <div id="biome-health-container">
             <div id="biome-text">🌍 <span id="world-name-display">The Barren Dawn</span> – Health: <span id="biome-health-pct">0%</span></div>
             <div id="biome-health-bar"></div>
         </div>
 
-        <!-- Story Container -->
         <div id="story-container">🌱 The barren crust awaits your touch.</div>
 
-        <!-- Compact Anomaly Panel -->
         <div id="anomaly-panel">
             <div class="anomaly-header-row">
                 <span class="anomaly-title-text">🔮 Anomaly</span>
@@ -556,19 +656,14 @@
                     <span class="bar"><span class="fill" id="timer-fill" style="width:100%;"></span></span>
                 </span>
             </div>
-            <div class="anomaly-actions" id="anomaly-actions">
-                <!-- Action buttons rendered here -->
-            </div>
+            <div class="anomaly-actions" id="anomaly-actions"></div>
         </div>
 
-        <!-- Species Registry Bar -->
         <div id="species-registry-bar">
             <span class="empty-text">🔍 Restore biome to attract life.</span>
         </div>
 
-        <!-- Main Row -->
         <div id="main-row">
-
             <div id="left-panel">
                 <div style="display:flex; justify-content:space-between; align-items:center; color:#94a3b8; font-weight:bold; border-bottom:1px solid rgba(59,130,246,0.2); padding-bottom:5px;">
                     <span id="left-biome-name" style="color:#fbbf24; font-size:0.95rem;">The Barren Dawn</span>
@@ -577,7 +672,6 @@
 
                 <div id="left-energy-display">⚡ <span id="energy-val">0</span></div>
 
-                <!-- Air -->
                 <div class="left-gauge">
                     <div class="left-gauge-header">
                         <button id="btn-air" class="action-btn" onclick="takeAction('air')">
@@ -592,7 +686,6 @@
                     </div>
                 </div>
 
-                <!-- Water -->
                 <div class="left-gauge">
                     <div class="left-gauge-header">
                         <button id="btn-water" class="action-btn" onclick="takeAction('water')">
@@ -607,7 +700,6 @@
                     </div>
                 </div>
 
-                <!-- Soil -->
                 <div class="left-gauge">
                     <div class="left-gauge-header">
                         <button id="btn-soil" class="action-btn" onclick="takeAction('soil')">
@@ -656,7 +748,51 @@
     </div>
 
     <script>
-        // ── Game State ──
+        // ── Splash Screen Typewriter ──
+        const storyLines = [
+            "Restoration Protocol – Our mission: to terraform two dying worlds.",
+            "Purify air, water, and soil. Discover new species. Manage energy.",
+            "Survive unpredictable anomalies. Every choice shapes the planet's rebirth.",
+            "Are you ready to restore life?"
+        ];
+
+        let charIndex = 0;
+        let lineIndex = 0;
+        const typewriterEl = document.getElementById('typewriter');
+
+        function typeNextChar() {
+            if (lineIndex >= storyLines.length) return;
+            const currentLine = storyLines[lineIndex];
+            if (charIndex < currentLine.length) {
+                typewriterEl.textContent += currentLine.charAt(charIndex);
+                charIndex++;
+                setTimeout(typeNextChar, 30); // typing speed
+            } else {
+                // Line complete: add line break and move to next
+                typewriterEl.textContent += '\n';
+                lineIndex++;
+                charIndex = 0;
+                // If there are more lines, continue after a pause
+                if (lineIndex < storyLines.length) {
+                    setTimeout(typeNextChar, 400);
+                }
+            }
+        }
+
+        // Start typewriter after page load
+        window.addEventListener('load', function() {
+            setTimeout(typeNextChar, 600);
+        });
+
+        // ── Start Button ──
+        document.getElementById('start-btn').addEventListener('click', function() {
+            const overlay = document.getElementById('splash-overlay');
+            overlay.classList.add('hidden');
+            // Unmute any background audio if needed
+            // (no audio, so just proceed)
+        });
+
+        // ── Game Script (same as before, with minor adjustments) ──
         const state = {
             energy: 40,
             toxicity: { air: 100, water: 100, soil: 100 },
@@ -675,7 +811,6 @@
         const ANOMALY_MAX_TIME = 30;
         let riskAssessed = false;
 
-        // ── World Definitions ──
         const WORLDS = {
             1: {
                 name: "The Barren Dawn",
@@ -745,7 +880,7 @@
 
         let currentSpecies = WORLDS[1].species;
 
-        // ── Core Loop ──
+        // Core Loop
         setInterval(() => {
             if (!state.worldCompleted) {
                 state.energy = Math.min(200, state.energy + 1.0);
@@ -754,7 +889,6 @@
                 state.toxicity.soil = Math.min(100, state.toxicity.soil + 0.03);
             }
 
-            // Calculate active species pressure
             let pressure = { air: 0, water: 0, soil: 0 };
             currentSpecies.forEach(spec => {
                 if (discovered.has(spec.id)) {
@@ -791,7 +925,7 @@
             checkLevelProgression();
         }, 1000);
 
-        // ── Level Progression ──
+        // ── Game functions (same as before) ──
         function checkLevelProgression() {
             if (state.worldCompleted) return;
 
@@ -829,7 +963,6 @@
             checkDiscoveries();
         }
 
-        // ── Discoveries ──
         function checkDiscoveries() {
             currentSpecies.forEach(spec => {
                 if (!discovered.has(spec.id) && state.toxicity[spec.req.type] <= spec.req.val) {
@@ -853,14 +986,12 @@
             if (el) el.style.display = show ? 'block' : 'none';
         }
 
-        // ── Story Updates ──
         function setStory(msg, type = 'neutral') {
             const el = document.getElementById('story-container');
             el.textContent = msg;
             el.className = type;
         }
 
-        // ── Anomaly System ──
         function handleAnomalies() {
             if (activeAnomaly) {
                 anomalyTimeLeft--;
@@ -894,14 +1025,12 @@
             const actions = document.getElementById('anomaly-actions');
             actions.innerHTML = '';
 
-            // Risk Assessment button
             const riskBtn = document.createElement('button');
             riskBtn.className = 'anomaly-action-btn risk-btn';
             riskBtn.innerHTML = `<span>📊 Assess Risk (⚡5)</span>`;
             riskBtn.onclick = () => assessRisk();
             actions.appendChild(riskBtn);
 
-            // Action buttons
             activeAnomaly.options.forEach(opt => {
                 const btn = document.createElement('button');
                 btn.className = 'anomaly-action-btn ' + activeAnomaly.cssClass;
@@ -927,7 +1056,6 @@
         function resolveAnomaly(id, choice) {
             const roll = Math.random() * 100;
             let msg = '', type = 'neutral';
-
             const goodThreshold = 50;
 
             if (id === 'flare' || id === 'ion_storm') {
@@ -987,7 +1115,6 @@
             if (msg) setStory(msg, type);
         }
 
-        // ── UI Updates ──
         function updateHUD() {
             document.getElementById('energy-val').textContent = Math.floor(state.energy);
 
@@ -1017,7 +1144,6 @@
             document.getElementById('viewport').style.filter = `hue-rotate(${health * 0.9}deg)`;
         }
 
-        // ── Species Registry Bar ──
         function updateRegistryBar() {
             const bar = document.getElementById('species-registry-bar');
             if (discovered.size === 0) {
@@ -1048,7 +1174,6 @@
             bar.innerHTML = html;
         }
 
-        // ── Species Detail ──
         function showDetail(id) {
             const spec = currentSpecies.find(s => s.id === id);
             if (!spec) return;
@@ -1096,7 +1221,6 @@
             });
         }
 
-        // ── Actions ──
         function takeAction(type) {
             const cost = state.baseActionCost;
             if (state.energy >= cost && state.toxicity[type] > 0 && cooldowns[type] === 0 && !state.worldCompleted) {
@@ -1111,7 +1235,6 @@
             }
         }
 
-        // ── World 2 Entry ──
         function startWorld2() {
             state.world = 2;
             state.level = 1;
@@ -1138,11 +1261,10 @@
             populateRegistryModal();
         }
 
-        // ── Init ──
-        window.onload = () => {
+        // Init
+        window.onload = function() {
             document.getElementById('left-biome-name').textContent = WORLDS[1].name;
             document.getElementById('world-name-display').textContent = WORLDS[1].name;
-            // Next World button added dynamically
             const btn = document.createElement('button');
             btn.id = 'next-world-btn';
             btn.textContent = '⚡ Enter the Lightning Wastes';
