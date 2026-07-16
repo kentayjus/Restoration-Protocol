@@ -1331,7 +1331,6 @@
                 if (t) t.volume = vol;
             });
             localStorage.setItem('musicVolume', value);
-            // Update both sliders
             splashVolumeSlider.value = value;
             gameVolumeSlider.value = value;
         }
@@ -1361,10 +1360,12 @@
         }
 
         function toggleMusic() {
-            const btn = document.getElementById('music-btn');
+            music.muted = !music.muted;
             if (music.muted) {
-                music.muted = false;
-                // Resume playback
+                Object.values(music.tracks).forEach(t => { if (t) t.pause(); });
+                localStorage.setItem('musicMuted', 'true');
+            } else {
+                localStorage.setItem('musicMuted', 'false');
                 if (music.current) {
                     const track = music.tracks[music.current];
                     if (track) {
@@ -1372,19 +1373,19 @@
                         track.play().catch(() => {});
                     }
                 } else {
-                    // No current track, play title
-                    playTrack('title');
+                    // No current track, play title if on splash
+                    const splash = document.getElementById('splash-overlay');
+                    if (!splash.classList.contains('hidden')) {
+                        playTrack('title');
+                    } else {
+                        playTrack('world1');
+                    }
                 }
-                localStorage.setItem('musicMuted', 'false');
-            } else {
-                music.muted = true;
-                Object.values(music.tracks).forEach(t => { if (t) t.pause(); });
-                localStorage.setItem('musicMuted', 'true');
             }
             updateMusicUI();
         }
 
-        // Restore mute state from localStorage
+        // Restore mute state
         if (localStorage.getItem('musicMuted') === 'true') {
             music.muted = true;
         }
@@ -1393,7 +1394,11 @@
         // Splash button toggle
         splashMusicBtn.addEventListener('click', function(e) {
             e.stopPropagation();
-            toggleMusic();
+            if (!music.initialized) {
+                initAudio();
+            } else {
+                toggleMusic();
+            }
         });
 
         // Game button toggle
@@ -1417,6 +1422,12 @@
                 return;
             }
 
+            // Avoid restarting same track
+            if (music.current === trackId) {
+                const track = music.tracks[trackId];
+                if (track && !track.paused) return;
+            }
+
             stopAllTracks();
             const track = music.tracks[trackId];
             if (track) {
@@ -1435,36 +1446,36 @@
         function initAudio() {
             if (audioInitialized) return;
             audioInitialized = true;
-
+            music.initialized = true;
             if (!music.muted) {
-                // Play title track if splash is still visible
                 const splash = document.getElementById('splash-overlay');
                 if (!splash.classList.contains('hidden')) {
-                    playTrack('title');
-                } else {
-                    // Fallback: restore current track
-                    const savedTrack = localStorage.getItem('currentTrack');
-                    if (savedTrack && music.tracks[savedTrack]) {
-                        playTrack(savedTrack);
-                    } else {
-                        playTrack('world1');
-                    }
+                    setTimeout(() => {
+                        playTrack('title');
+                    }, 50);
                 }
             }
         }
 
-        // Wait for user interaction to start audio
-        document.addEventListener('click', function initAudioOnClick() {
-            if (!audioInitialized) {
-                initAudio();
-            }
+        // Force audio on any click/touch on the splash overlay (only once)
+        const splashOverlay = document.getElementById('splash-overlay');
+        splashOverlay.addEventListener('click', function() {
+            if (!audioInitialized) initAudio();
+        }, { once: true });
+        splashOverlay.addEventListener('touchstart', function() {
+            if (!audioInitialized) initAudio();
         }, { once: true });
 
-        document.addEventListener('touchstart', function initAudioOnTouch() {
-            if (!audioInitialized) {
-                initAudio();
-            }
-        }, { once: true });
+        // ── Start Button ──
+        document.getElementById('start-btn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (!audioInitialized) initAudio();
+            document.getElementById('splash-overlay').classList.add('hidden');
+            // Switch to world1 track after a short delay
+            setTimeout(() => {
+                if (!music.muted) playTrack('world1');
+            }, 150);
+        });
 
         // ── Splash Screen Typewriter ──
         const storyLines = [
@@ -1497,24 +1508,6 @@
 
         window.addEventListener('load', function() {
             setTimeout(typeNextChar, 600);
-            // Try to init audio on load if any click already happened (unlikely)
-        });
-
-        // ── Start Button ──
-        document.getElementById('start-btn').addEventListener('click', function(e) {
-            e.stopPropagation();
-
-            if (!audioInitialized) {
-                initAudio();
-            }
-
-            document.getElementById('splash-overlay').classList.add('hidden');
-
-            setTimeout(() => {
-                if (!music.muted) {
-                    playTrack('world1');
-                }
-            }, 100);
         });
 
         // ── Story Data ──
