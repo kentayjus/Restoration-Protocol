@@ -164,6 +164,13 @@
             color: #fbbf24;
             animation: musicPulse 1.5s ease-in-out infinite;
         }
+        .splash-music-controls .vol-label {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            min-width: 32px;
+            text-align: center;
+            font-weight: 600;
+        }
         @keyframes musicPulse {
             0%, 100% { text-shadow: 0 0 10px rgba(251, 191, 36, 0.2); }
             50% { text-shadow: 0 0 25px rgba(251, 191, 36, 0.6); }
@@ -225,6 +232,7 @@
             .start-btn { font-size: 1.0rem; padding: 12px 24px; }
             .splash-music-controls input[type="range"] { width: 50px; }
             .splash-music-controls button { font-size: 1.3rem; }
+            .splash-music-controls .vol-label { font-size: 0.65rem; min-width: 26px; }
         }
 
         /* ── Biome Health Bar (Clickable) ── */
@@ -656,7 +664,7 @@
             color: #94a3b8;
             font-size: 1.4rem;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: color 0.2s ease, transform 0.2s ease;
             padding: 0 2px;
             line-height: 1;
             position: relative;
@@ -711,6 +719,14 @@
             height: 4px;
             background: #334155;
             border-radius: 4px;
+        }
+
+        .vol-label {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            min-width: 28px;
+            text-align: center;
+            font-weight: 600;
         }
 
         /* ── Story Modal ── */
@@ -1088,6 +1104,7 @@
             #stages-modal .modal-content { max-width: 95%; }
             #volume-slider { width: 44px; }
             .music-controls { gap: 4px; }
+            .vol-label { font-size: 0.6rem; min-width: 22px; }
         }
         @media (max-width: 480px) {
             #left-energy-display { font-size: 1.8rem; }
@@ -1108,6 +1125,7 @@
             #volume-slider { width: 36px; }
             #volume-slider::-webkit-slider-thumb { width: 10px; height: 10px; }
             #volume-slider::-moz-range-thumb { width: 10px; height: 10px; }
+            .vol-label { font-size: 0.55rem; min-width: 18px; }
         }
     </style>
 </head>
@@ -1124,6 +1142,7 @@
             <div class="splash-music-controls">
                 <button id="splash-music-btn" class="playing">🎵</button>
                 <input type="range" id="splash-volume-slider" min="0" max="100" value="80" />
+                <span class="vol-label" id="splash-vol-label">80%</span>
             </div>
         </div>
     </div>
@@ -1166,6 +1185,7 @@
                         <div class="music-controls">
                             <button id="music-btn" onclick="toggleMusic()" class="playing">🎵</button>
                             <input type="range" id="volume-slider" min="0" max="100" value="80" />
+                            <span class="vol-label" id="game-vol-label">80%</span>
                         </div>
                         <button onclick="openRegistry()" style="background:none; border:none; font-size:1.3rem; cursor:pointer;">📂</button>
                     </div>
@@ -1316,8 +1336,49 @@
         // ── Music UI Elements ──
         const splashMusicBtn = document.getElementById('splash-music-btn');
         const splashVolumeSlider = document.getElementById('splash-volume-slider');
+        const splashVolLabel = document.getElementById('splash-vol-label');
         const gameMusicBtn = document.getElementById('music-btn');
         const gameVolumeSlider = document.getElementById('volume-slider');
+        const gameVolLabel = document.getElementById('game-vol-label');
+
+        // ── Volume Icon Helper ──
+        function getVolumeIcon(value) {
+            const v = parseInt(value);
+            if (v === 0) return '🔇';
+            if (v < 30) return '🔈';
+            if (v < 70) return '🔉';
+            return '🔊';
+        }
+
+        // ── Apply volume to all tracks ──
+        function applyVolumeToAllTracks(value) {
+            const vol = value / 100;
+            Object.values(music.tracks).forEach(t => {
+                if (t) {
+                    t.volume = vol;
+                }
+            });
+            localStorage.setItem('musicVolume', value);
+            // Update labels
+            splashVolLabel.textContent = value + '%';
+            gameVolLabel.textContent = value + '%';
+            // Update button icons
+            const icon = getVolumeIcon(value);
+            if (!music.muted) {
+                splashMusicBtn.textContent = icon;
+                gameMusicBtn.textContent = icon;
+                splashMusicBtn.classList.add('playing');
+                gameMusicBtn.classList.add('playing');
+            }
+        }
+
+        // ── Set volume (called from sliders) ──
+        function setVolume(value) {
+            applyVolumeToAllTracks(value);
+            // Sync both sliders
+            splashVolumeSlider.value = value;
+            gameVolumeSlider.value = value;
+        }
 
         // Restore volume from localStorage
         const savedVolume = localStorage.getItem('musicVolume');
@@ -1325,19 +1386,10 @@
         splashVolumeSlider.value = initialVolume;
         gameVolumeSlider.value = initialVolume;
 
-        function setVolume(value) {
-            const vol = value / 100;
-            Object.values(music.tracks).forEach(t => {
-                if (t) t.volume = vol;
-            });
-            localStorage.setItem('musicVolume', value);
-            splashVolumeSlider.value = value;
-            gameVolumeSlider.value = value;
-        }
+        // Initial volume setup
+        applyVolumeToAllTracks(initialVolume);
 
-        setVolume(initialVolume);
-
-        // Sync sliders
+        // ── Slider event listeners ──
         splashVolumeSlider.addEventListener('input', function() {
             setVolume(this.value);
         });
@@ -1345,9 +1397,59 @@
             setVolume(this.value);
         });
 
+        // ── Double-click to reset to 80% ──
+        splashVolumeSlider.addEventListener('dblclick', function() {
+            setVolume(80);
+        });
+        gameVolumeSlider.addEventListener('dblclick', function() {
+            setVolume(80);
+        });
+
+        // ── Keyboard shortcuts ──
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'm' || e.key === 'M') {
+                toggleMusic();
+                e.preventDefault();
+            }
+        });
+
+        function stopAllTracks() {
+            Object.values(music.tracks).forEach(t => {
+                if (t) {
+                    t.pause();
+                    t.currentTime = 0;
+                }
+            });
+        }
+
+        function playTrack(trackId) {
+            if (music.muted) {
+                music.current = trackId;
+                return;
+            }
+
+            // Avoid restarting same track if it's already playing
+            if (music.current === trackId) {
+                const track = music.tracks[trackId];
+                if (track && !track.paused) return;
+            }
+
+            stopAllTracks();
+            const track = music.tracks[trackId];
+            if (track) {
+                track.currentTime = 0;
+                track.volume = splashVolumeSlider.value / 100;
+                track.play().catch(e => console.log('Audio play prevented:', e));
+                music.current = trackId;
+                localStorage.setItem('currentTrack', trackId);
+                updateMusicUI();
+            }
+        }
+
         function updateMusicUI() {
             const isMuted = music.muted;
-            const icon = isMuted ? '🔇' : '🎵';
+            const vol = parseInt(splashVolumeSlider.value);
+            const icon = isMuted ? '🔇' : getVolumeIcon(vol);
             splashMusicBtn.textContent = icon;
             gameMusicBtn.textContent = icon;
             if (isMuted) {
@@ -1373,7 +1475,6 @@
                         track.play().catch(() => {});
                     }
                 } else {
-                    // No current track, play title if on splash
                     const splash = document.getElementById('splash-overlay');
                     if (!splash.classList.contains('hidden')) {
                         playTrack('title');
@@ -1385,13 +1486,13 @@
             updateMusicUI();
         }
 
-        // Restore mute state
+        // Restore mute state from localStorage
         if (localStorage.getItem('musicMuted') === 'true') {
             music.muted = true;
         }
         updateMusicUI();
 
-        // Splash button toggle
+        // ── Splash button toggle ──
         splashMusicBtn.addEventListener('click', function(e) {
             e.stopPropagation();
             if (!music.initialized) {
@@ -1401,44 +1502,11 @@
             }
         });
 
-        // Game button toggle
+        // ── Game button toggle ──
         gameMusicBtn.addEventListener('click', function(e) {
             e.stopPropagation();
             toggleMusic();
         });
-
-        function stopAllTracks() {
-            Object.values(music.tracks).forEach(t => {
-                if (t) {
-                    t.pause();
-                    t.currentTime = 0;
-                }
-            });
-        }
-
-        function playTrack(trackId) {
-            if (music.muted) {
-                music.current = trackId;
-                return;
-            }
-
-            // Avoid restarting same track
-            if (music.current === trackId) {
-                const track = music.tracks[trackId];
-                if (track && !track.paused) return;
-            }
-
-            stopAllTracks();
-            const track = music.tracks[trackId];
-            if (track) {
-                track.currentTime = 0;
-                track.volume = splashVolumeSlider.value / 100;
-                track.play().catch(e => console.log('Audio play prevented:', e));
-                music.current = trackId;
-                localStorage.setItem('currentTrack', trackId);
-                updateMusicUI();
-            }
-        }
 
         // ── Audio Initialization ──
         let audioInitialized = false;
@@ -1471,7 +1539,6 @@
             e.stopPropagation();
             if (!audioInitialized) initAudio();
             document.getElementById('splash-overlay').classList.add('hidden');
-            // Switch to world1 track after a short delay
             setTimeout(() => {
                 if (!music.muted) playTrack('world1');
             }, 150);
@@ -2163,20 +2230,6 @@
             updateBiomeHealth();
             updateRegistryBar();
             setStory('🌱 The barren crust of Aethra awaits your touch.', 'neutral');
-
-            // If music isn't muted, try to init audio on first user interaction
-            if (!music.muted) {
-                document.addEventListener('click', function init() {
-                    if (!audioInitialized) {
-                        initAudio();
-                    }
-                }, { once: true });
-                document.addEventListener('touchstart', function init() {
-                    if (!audioInitialized) {
-                        initAudio();
-                    }
-                }, { once: true });
-            }
         };
     </script>
 </body>
