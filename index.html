@@ -97,7 +97,7 @@
             font-weight: 400;
             color: #e2e8f0;
             line-height: 1.6;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             min-height: 4em;
             text-shadow: 0 2px 10px rgba(0,0,0,0.8);
         }
@@ -134,18 +134,100 @@
             box-shadow: 0 12px 40px rgba(251, 191, 36, 0.6);
         }
 
+        /* ── Splash Music Controls ── */
+        .splash-music-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 20px;
+            padding: 8px 16px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 40px;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+        .splash-music-controls button {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.6rem;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            padding: 0 4px;
+            line-height: 1;
+        }
+        .splash-music-controls button:hover {
+            color: #fbbf24;
+        }
+        .splash-music-controls button.playing {
+            color: #fbbf24;
+            animation: musicPulse 1.5s ease-in-out infinite;
+        }
+        @keyframes musicPulse {
+            0%, 100% { text-shadow: 0 0 10px rgba(251, 191, 36, 0.2); }
+            50% { text-shadow: 0 0 25px rgba(251, 191, 36, 0.6); }
+        }
+
+        .splash-music-controls input[type="range"] {
+            width: 80px;
+            height: 4px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #334155;
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .splash-music-controls input[type="range"]:hover {
+            background: #475569;
+        }
+        .splash-music-controls input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #fbbf24;
+            cursor: pointer;
+            box-shadow: 0 0 12px rgba(251, 191, 36, 0.3);
+            transition: transform 0.2s ease;
+        }
+        .splash-music-controls input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+        .splash-music-controls input[type="range"]::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #fbbf24;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 12px rgba(251, 191, 36, 0.3);
+        }
+        .splash-music-controls input[type="range"]::-moz-range-track {
+            height: 4px;
+            background: #334155;
+            border-radius: 4px;
+        }
+
         @media (max-width: 768px) {
             .splash-title { font-size: 3rem; }
             .splash-story { font-size: 1.1rem; }
             .start-btn { font-size: 1.3rem; padding: 14px 32px; }
+            .splash-music-controls { gap: 8px; padding: 6px 12px; }
+            .splash-music-controls input[type="range"] { width: 60px; }
         }
         @media (max-width: 480px) {
             .splash-title { font-size: 2.2rem; }
             .splash-story { font-size: 0.95rem; }
             .start-btn { font-size: 1.0rem; padding: 12px 24px; }
+            .splash-music-controls input[type="range"] { width: 50px; }
+            .splash-music-controls button { font-size: 1.3rem; }
         }
 
-        /* ── Biome Health Bar ── */
+        /* ── Biome Health Bar (Clickable) ── */
         #biome-health-container {
             width: 100%;
             height: 32px;
@@ -155,6 +237,12 @@
             border: 1px solid rgba(59, 130, 246, .15);
             position: relative;
             box-shadow: inset 0 2px 6px rgba(0, 0, 0, .5);
+            cursor: pointer;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        #biome-health-container:hover {
+            border-color: rgba(251, 191, 36, 0.5);
+            box-shadow: 0 0 30px rgba(251, 191, 36, 0.1), inset 0 2px 6px rgba(0, 0, 0, .5);
         }
         #biome-health-bar {
             height: 100%;
@@ -175,6 +263,12 @@
             text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
             z-index: 1;
             pointer-events: none;
+        }
+        #biome-text .hint {
+            font-weight: 400;
+            opacity: 0.5;
+            font-size: 0.7rem;
+            margin-left: 6px;
         }
 
         /* ── Story Container ── */
@@ -237,6 +331,19 @@
             line-height: 1.4;
         }
         .anomaly-panel-message strong { color: #fbbf24; }
+        .anomaly-panel-message .scanning-text {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .anomaly-panel-message .scanning-text .dish {
+            display: inline-block;
+            animation: dishPulse 2s ease-in-out infinite;
+        }
+        @keyframes dishPulse {
+            0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.7; }
+            50% { transform: scale(1.1) rotate(5deg); opacity: 1; }
+        }
 
         .anomaly-timer {
             font-size: 0.8rem;
@@ -288,14 +395,6 @@
         .anomaly-action-btn.anomaly-catalyst { background: linear-gradient(145deg, #8b5cf6, #7c3aed); border-color: #a855f7; }
         .anomaly-action-btn.anomaly-tremor { background: linear-gradient(145deg, #d97706, #b45309); border-color: #b45309; }
         .anomaly-action-btn.risk-btn { background: linear-gradient(145deg, #3b82f6, #2563eb); border-color: #3b82f6; }
-
-        .anomaly-empty-text {
-            color: #64748b;
-            font-size: 0.95rem;
-            font-style: italic;
-            text-align: center;
-            padding: 4px 0;
-        }
 
         /* ── Species Registry ── */
         #species-registry-bar {
@@ -375,7 +474,7 @@
             gap: 10px;
         }
         .energy-label {
-            font-size: 1.2rem;
+            font-size: 0.75rem;
             font-weight: 700;
             color: #94a3b8;
             text-transform: uppercase;
@@ -383,7 +482,7 @@
             white-space: nowrap;
         }
         #left-energy-display {
-            font-size: 2rem;
+            font-size: 2.6rem;
             font-weight: 900;
             color: #fbbf24;
             text-shadow: 0 0 20px #fbbf24, 0 0 40px rgba(251, 191, 36, 0.3);
@@ -391,7 +490,7 @@
             align-items: center;
             gap: 10px;
         }
-        #left-energy-display span { font-size: 2rem; }
+        #left-energy-display span { font-size: 2.6rem; }
 
         /* ── Enhanced Action Buttons ── */
         .left-gauge { display: flex; flex-direction: column; gap: 4px; }
@@ -544,6 +643,76 @@
             opacity: 1;
         }
 
+        /* ── Music Controls (in left panel) ── */
+        .music-controls {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        #music-btn {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 0 2px;
+            line-height: 1;
+            position: relative;
+        }
+        #music-btn:hover {
+            color: #fbbf24;
+            transform: scale(1.1);
+        }
+        #music-btn.playing {
+            color: #fbbf24;
+            animation: musicPulse 1.5s ease-in-out infinite;
+        }
+
+        #volume-slider {
+            width: 56px;
+            height: 4px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #334155;
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        #volume-slider:hover {
+            background: #475569;
+        }
+        #volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #fbbf24;
+            cursor: pointer;
+            box-shadow: 0 0 12px rgba(251, 191, 36, 0.3);
+            transition: transform 0.2s ease;
+        }
+        #volume-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+        #volume-slider::-moz-range-thumb {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #fbbf24;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 12px rgba(251, 191, 36, 0.3);
+        }
+        #volume-slider::-moz-range-track {
+            height: 4px;
+            background: #334155;
+            border-radius: 4px;
+        }
+
         /* ── Story Modal ── */
         #story-modal .modal-content {
             max-width: 520px;
@@ -585,6 +754,52 @@
             background: rgba(139, 92, 246, 0.1);
             border-radius: 8px;
             border: 1px solid rgba(139, 92, 246, 0.15);
+        }
+
+        /* ── Stages Modal ── */
+        #stages-modal .modal-content {
+            max-width: 580px;
+        }
+        .stage-item {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            border-radius: 10px;
+            padding: 12px 16px;
+            transition: all 0.3s ease;
+        }
+        .stage-item.completed {
+            border-color: rgba(74, 222, 128, 0.3);
+            background: rgba(74, 222, 128, 0.05);
+        }
+        .stage-item.active {
+            border-color: rgba(251, 191, 36, 0.4);
+            background: rgba(251, 191, 36, 0.05);
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.05);
+        }
+        .stage-item .stage-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .stage-item .stage-name {
+            font-weight: 700;
+            color: #f1f5f9;
+            font-size: 1.0rem;
+        }
+        .stage-item .stage-badge {
+            font-size: 0.75rem;
+            padding: 2px 10px;
+            border-radius: 12px;
+            background: rgba(59, 130, 246, 0.2);
+            color: #94a3b8;
+        }
+        .stage-item .stage-badge.active { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+        .stage-item .stage-badge.completed { background: rgba(74, 222, 128, 0.2); color: #4ade80; }
+        .stage-item .stage-desc {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: 4px;
+            line-height: 1.4;
         }
 
         /* ── Victory Panel ── */
@@ -870,6 +1085,9 @@
             #victory-panel { padding: 20px; }
             .victory-title { font-size: 2.2rem; }
             .victory-icon { font-size: 3.5rem; }
+            #stages-modal .modal-content { max-width: 95%; }
+            #volume-slider { width: 44px; }
+            .music-controls { gap: 4px; }
         }
         @media (max-width: 480px) {
             #left-energy-display { font-size: 1.8rem; }
@@ -885,6 +1103,11 @@
             .victory-title { font-size: 1.8rem; }
             .victory-icon { font-size: 3rem; }
             .victory-btn { font-size: 1rem; padding: 12px 28px; }
+            #stages-modal .modal-content { padding: 16px; }
+            .stage-item .stage-name { font-size: 0.9rem; }
+            #volume-slider { width: 36px; }
+            #volume-slider::-webkit-slider-thumb { width: 10px; height: 10px; }
+            #volume-slider::-moz-range-thumb { width: 10px; height: 10px; }
         }
     </style>
 </head>
@@ -898,23 +1121,31 @@
                 <span id="typewriter"></span><span class="cursor"></span>
             </div>
             <button class="start-btn" id="start-btn">▶ Start Game</button>
+            <div class="splash-music-controls">
+                <button id="splash-music-btn" class="playing">🎵</button>
+                <input type="range" id="splash-volume-slider" min="0" max="100" value="80" />
+            </div>
         </div>
     </div>
 
     <!-- Game Container -->
     <div id="game-container">
 
-        <div id="biome-health-container">
-            <div id="biome-text">🌍 <span id="world-name-display">Aethra</span> – Health: <span id="biome-health-pct">0%</span></div>
+        <!-- Clickable Health Bar -->
+        <div id="biome-health-container" onclick="openStagesModal()">
+            <div id="biome-text">🌍 <span id="world-name-display">Aethra</span> – Health: <span id="biome-health-pct">0%</span> <span class="hint">📖 click for stages</span></div>
             <div id="biome-health-bar"></div>
         </div>
 
         <div id="story-container">🌱 The barren crust of Aethra awaits your touch.</div>
 
+        <!-- Anomaly Panel -->
         <div id="anomaly-panel">
             <div class="anomaly-header-row">
                 <span class="anomaly-title-text">🔮 Anomaly</span>
-                <span class="anomaly-panel-message" id="anomaly-message">Scanning surface for random events…</span>
+                <span class="anomaly-panel-message" id="anomaly-message">
+                    <span class="scanning-text"><span class="dish">🛰️</span> Scanning for anomalies...</span>
+                </span>
                 <span class="anomaly-timer" id="anomaly-timer" style="display:none;">
                     <span id="timer-label">30s</span>
                     <span class="bar"><span class="fill" id="timer-fill" style="width:100%;"></span></span>
@@ -931,11 +1162,17 @@
             <div id="left-panel">
                 <div style="display:flex; justify-content:space-between; align-items:center; color:#94a3b8; font-weight:bold; border-bottom:1px solid rgba(59,130,246,0.2); padding-bottom:5px;">
                     <span id="left-biome-name" onclick="openStoryModal()">Aethra</span>
-                    <button onclick="openRegistry()" style="background:none; border:none; font-size:1.3rem; cursor:pointer;">📂</button>
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <div class="music-controls">
+                            <button id="music-btn" onclick="toggleMusic()" class="playing">🎵</button>
+                            <input type="range" id="volume-slider" min="0" max="100" value="80" />
+                        </div>
+                        <button onclick="openRegistry()" style="background:none; border:none; font-size:1.3rem; cursor:pointer;">📂</button>
+                    </div>
                 </div>
 
                 <div id="energy-row">
-                    <span class="energy-label">Solar Battery:</span>
+                    <span class="energy-label">Solar Battery Charge</span>
                     <div id="left-energy-display">⚡ <span id="energy-val">0</span></div>
                 </div>
 
@@ -1000,6 +1237,13 @@
         </div>
     </div>
 
+    <!-- ── Audio Elements ── -->
+    <audio id="track-title" src="assets/title.mp3" preload="auto" loop></audio>
+    <audio id="track-world1" src="assets/world1.mp3" preload="auto" loop></audio>
+    <audio id="track-victory" src="assets/victory.mp3" preload="auto" loop></audio>
+    <audio id="track-world2" src="assets/world2.mp3" preload="auto" loop></audio>
+    <audio id="track-final" src="assets/final.mp3" preload="auto" loop></audio>
+
     <!-- Species Registry Modal -->
     <div class="modal-overlay" id="species-modal">
         <div class="modal-content">
@@ -1043,7 +1287,185 @@
         </div>
     </div>
 
+    <!-- Stages Modal -->
+    <div class="modal-overlay" id="stages-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="stages-modal-title">📖 Restoration Stages</h3>
+                <button class="modal-close" onclick="closeModal('stages-modal')">&times;</button>
+            </div>
+            <div id="stages-list" style="display:flex; flex-direction:column; gap:10px;"></div>
+        </div>
+    </div>
+
     <script>
+        // ── Music System ──
+        const music = {
+            tracks: {
+                title: document.getElementById('track-title'),
+                world1: document.getElementById('track-world1'),
+                victory: document.getElementById('track-victory'),
+                world2: document.getElementById('track-world2'),
+                final: document.getElementById('track-final')
+            },
+            current: null,
+            muted: false,
+            initialized: false
+        };
+
+        // ── Music UI Elements ──
+        const splashMusicBtn = document.getElementById('splash-music-btn');
+        const splashVolumeSlider = document.getElementById('splash-volume-slider');
+        const gameMusicBtn = document.getElementById('music-btn');
+        const gameVolumeSlider = document.getElementById('volume-slider');
+
+        // Restore volume from localStorage
+        const savedVolume = localStorage.getItem('musicVolume');
+        const initialVolume = savedVolume !== null ? parseInt(savedVolume) : 80;
+        splashVolumeSlider.value = initialVolume;
+        gameVolumeSlider.value = initialVolume;
+
+        function setVolume(value) {
+            const vol = value / 100;
+            Object.values(music.tracks).forEach(t => {
+                if (t) t.volume = vol;
+            });
+            localStorage.setItem('musicVolume', value);
+            // Update both sliders
+            splashVolumeSlider.value = value;
+            gameVolumeSlider.value = value;
+        }
+
+        setVolume(initialVolume);
+
+        // Sync sliders
+        splashVolumeSlider.addEventListener('input', function() {
+            setVolume(this.value);
+        });
+        gameVolumeSlider.addEventListener('input', function() {
+            setVolume(this.value);
+        });
+
+        function updateMusicUI() {
+            const isMuted = music.muted;
+            const icon = isMuted ? '🔇' : '🎵';
+            splashMusicBtn.textContent = icon;
+            gameMusicBtn.textContent = icon;
+            if (isMuted) {
+                splashMusicBtn.classList.remove('playing');
+                gameMusicBtn.classList.remove('playing');
+            } else {
+                splashMusicBtn.classList.add('playing');
+                gameMusicBtn.classList.add('playing');
+            }
+        }
+
+        function toggleMusic() {
+            const btn = document.getElementById('music-btn');
+            if (music.muted) {
+                music.muted = false;
+                // Resume playback
+                if (music.current) {
+                    const track = music.tracks[music.current];
+                    if (track) {
+                        track.volume = splashVolumeSlider.value / 100;
+                        track.play().catch(() => {});
+                    }
+                } else {
+                    // No current track, play title
+                    playTrack('title');
+                }
+                localStorage.setItem('musicMuted', 'false');
+            } else {
+                music.muted = true;
+                Object.values(music.tracks).forEach(t => { if (t) t.pause(); });
+                localStorage.setItem('musicMuted', 'true');
+            }
+            updateMusicUI();
+        }
+
+        // Restore mute state from localStorage
+        if (localStorage.getItem('musicMuted') === 'true') {
+            music.muted = true;
+        }
+        updateMusicUI();
+
+        // Splash button toggle
+        splashMusicBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            toggleMusic();
+        });
+
+        // Game button toggle
+        gameMusicBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            toggleMusic();
+        });
+
+        function stopAllTracks() {
+            Object.values(music.tracks).forEach(t => {
+                if (t) {
+                    t.pause();
+                    t.currentTime = 0;
+                }
+            });
+        }
+
+        function playTrack(trackId) {
+            if (music.muted) {
+                music.current = trackId;
+                return;
+            }
+
+            stopAllTracks();
+            const track = music.tracks[trackId];
+            if (track) {
+                track.currentTime = 0;
+                track.volume = splashVolumeSlider.value / 100;
+                track.play().catch(e => console.log('Audio play prevented:', e));
+                music.current = trackId;
+                localStorage.setItem('currentTrack', trackId);
+                updateMusicUI();
+            }
+        }
+
+        // ── Audio Initialization ──
+        let audioInitialized = false;
+
+        function initAudio() {
+            if (audioInitialized) return;
+            audioInitialized = true;
+
+            if (!music.muted) {
+                // Play title track if splash is still visible
+                const splash = document.getElementById('splash-overlay');
+                if (!splash.classList.contains('hidden')) {
+                    playTrack('title');
+                } else {
+                    // Fallback: restore current track
+                    const savedTrack = localStorage.getItem('currentTrack');
+                    if (savedTrack && music.tracks[savedTrack]) {
+                        playTrack(savedTrack);
+                    } else {
+                        playTrack('world1');
+                    }
+                }
+            }
+        }
+
+        // Wait for user interaction to start audio
+        document.addEventListener('click', function initAudioOnClick() {
+            if (!audioInitialized) {
+                initAudio();
+            }
+        }, { once: true });
+
+        document.addEventListener('touchstart', function initAudioOnTouch() {
+            if (!audioInitialized) {
+                initAudio();
+            }
+        }, { once: true });
+
         // ── Splash Screen Typewriter ──
         const storyLines = [
             "Restoration Protocol – Our mission: to terraform two dying worlds.",
@@ -1075,10 +1497,24 @@
 
         window.addEventListener('load', function() {
             setTimeout(typeNextChar, 600);
+            // Try to init audio on load if any click already happened (unlikely)
         });
 
-        document.getElementById('start-btn').addEventListener('click', function() {
+        // ── Start Button ──
+        document.getElementById('start-btn').addEventListener('click', function(e) {
+            e.stopPropagation();
+
+            if (!audioInitialized) {
+                initAudio();
+            }
+
             document.getElementById('splash-overlay').classList.add('hidden');
+
+            setTimeout(() => {
+                if (!music.muted) {
+                    playTrack('world1');
+                }
+            }, 100);
         });
 
         // ── Story Data ──
@@ -1128,10 +1564,10 @@
                     soil: { icon: '🌱', label: 'Soil', btn: 'Neutralize' }
                 },
                 levels: [
-                    { background: "assets/sunrise.gif", description: "🌱 The barren crust of Aethra awaits your touch." },
-                    { background: "assets/Mountain Sunset.gif", description: "🌿 The first signs of life emerge on Aethra." },
-                    { background: "assets/Lake.gif", description: "🌳 Lush vegetation reclaims Aethra's land." },
-                    { background: "assets/paradise.gif", description: "🌺 Aethra is reborn." }
+                    { name: "The Barren Dawn", description: "Aethra lies silent and parched. The sky is choked with dust, the water stagnant. Your first task is to break the toxic crust and let the planet breathe again." },
+                    { name: "The Canopy Swamp", description: "As toxicity recedes, ancient seeds stir. Moisture returns to the air, and the first pioneer species take root. A new ecosystem is beginning to emerge." },
+                    { name: "The Oasis Lake", description: "The water is clearing. Lush vegetation spreads across the land, fed by purified rain. Aethra's heart is beating once more." },
+                    { name: "The Verdant Paradise", description: "Aethra is reborn. Vibrant forests, crystal waters, and a thriving biosphere—proof that life finds a way. Paradise is restored." }
                 ],
                 species: [
                     { id: "microbe", name: "Airborne Microbe", icon: "🦠", desc: "Feeds on floating carbon residues, purifying the air.",
@@ -1166,15 +1602,21 @@
                     soil: { icon: '🌀', label: 'Resonance', btn: 'Calm' }
                 },
                 levels: [
-                    { background: "assets/lightning slow.gif", description: "⚡ Storm clouds gather over Tempest, charged with fury." },
-                    { background: "assets/sparkle clouds.gif", description: "⛈️ The sky over Tempest crackles with potential." },
-                    { background: "assets/pixel snowy river.gif", description: "❄️ Snow begins to fall on Tempest, quieting the storm." }
+                    { name: "The Lightning Wastes", description: "Tempest's surface is a chaotic storm. Static electricity arcs across the sky, and the ground hums with destructive resonance. The first step is to ground the fury." },
+                    { name: "The Storm Veil", description: "The storm is weakening. Icy rain begins to fall, and the howling wind subsides. Ancient ice structures, hidden for eons, start to emerge." },
+                    { name: "The Frozen Haven", description: "The tempest is over. Snow blankets the land in silence. Crystals glitter in the weak sunlight, and pure meltwater carves rivers through the ice. A pristine world is reborn." }
                 ],
                 species: [
                     { id: "storm_sprite", name: "Storm Sprite", icon: "⚡", desc: "Dances in ionized air, purging static charge.",
                         req: { type: "air", val: 70 }, pos: { top: "15%", left: "60%" }, impact: { air: -0.18, water: 0.02, soil: 0.02 } },
-                    { id: "ice_skimmer", name: "Ice Skimmer", icon: "🐟", desc: "Filters heavy metals from Tempest's frozen waters.",
-                        req: { type: "water", val: 40 }, pos: { top: "85%", left: "75%" }, impact: { air: 0.02, water: -0.17, soil: 0.03 } }
+                    { id: "crystal_crawler", name: "Crystal Crawler", icon: "🪨", desc: "Burrows through crystalline soil, breaking down toxic resonance.",
+                        req: { type: "soil", val: 60 }, pos: { top: "70%", left: "25%" }, impact: { air: 0.02, water: 0.02, soil: -0.16 } },
+                    { id: "spark_finch", name: "Spark Finch", icon: "🐦", desc: "Soars through the storm, feeding on ionized particles.",
+                        req: { type: "air", val: 40 }, pos: { top: "18%", left: "45%" }, impact: { air: -0.14, water: 0.03, soil: 0.02 } },
+                    { id: "frost_bloom", name: "Frost Bloom", icon: "🌸", desc: "A resilient flower that purifies meltwater and soil simultaneously.",
+                        req: { type: "soil", val: 30, type2: "water", val2: 30 }, pos: { top: "65%", left: "60%" }, impact: { air: 0.03, water: -0.08, soil: -0.08 } },
+                    { id: "ice_skimmer", name: "Ice Skimmer", icon: "🐟", desc: "Filters heavy metals from Tempest's frozen waters. Only appears in the final stage.",
+                        req: { type: "water", val: 40, level: 3 }, pos: { top: "85%", left: "75%" }, impact: { air: 0.02, water: -0.17, soil: 0.03 } }
                 ],
                 anomalies: [
                     { id: 'ion_storm', level: 1, cssClass: 'anomaly-flare', 
@@ -1201,6 +1643,40 @@
             document.getElementById('story-modal').classList.add('show');
         }
 
+        // ── Stages Modal ──
+        function openStagesModal() {
+            const wd = WORLDS[state.world];
+            const title = document.getElementById('stages-modal-title');
+            title.textContent = `📖 ${wd.name}: Restoration Stages`;
+
+            const list = document.getElementById('stages-list');
+            list.innerHTML = '';
+
+            wd.levels.forEach((level, index) => {
+                const stageNum = index + 1;
+                const isCompleted = state.level > stageNum;
+                const isActive = state.level === stageNum;
+
+                const div = document.createElement('div');
+                div.className = 'stage-item';
+                if (isCompleted) div.classList.add('completed');
+                if (isActive) div.classList.add('active');
+
+                div.innerHTML = `
+                    <div class="stage-header">
+                        <span class="stage-name">${stageNum}. ${level.name}</span>
+                        <span class="stage-badge ${isCompleted ? 'completed' : isActive ? 'active' : ''}">
+                            ${isCompleted ? '✅ Complete' : isActive ? '🔄 Current' : '🔒 Locked'}
+                        </span>
+                    </div>
+                    <div class="stage-desc">${level.description}</div>
+                `;
+                list.appendChild(div);
+            });
+
+            document.getElementById('stages-modal').classList.add('show');
+        }
+
         // ── Victory Panel ──
         function showVictoryPanel() {
             const panel = document.getElementById('victory-panel');
@@ -1211,6 +1687,7 @@
             const btn = document.getElementById('victory-btn');
 
             if (state.world === 1) {
+                if (!music.muted) playTrack('victory');
                 title.textContent = '🌍 Aethra Restored!';
                 subtitle.textContent = 'The first world has been successfully terraformed. The galaxy watches in hope.';
                 icon.textContent = '🏆';
@@ -1221,6 +1698,7 @@
                     startWorld2();
                 };
             } else {
+                if (!music.muted) playTrack('final');
                 title.textContent = '🌟 Mission Complete!';
                 subtitle.textContent = 'Both worlds have been restored. The ecosystem is flourishing. You are the ultimate terraformer.';
                 icon.textContent = '🌌';
@@ -1228,7 +1706,27 @@
                 btn.textContent = '🔄 Play Again';
                 btn.onclick = function() {
                     panel.classList.remove('show');
-                    location.reload();
+                    // Reset everything
+                    state.world = 1;
+                    state.level = 1;
+                    state.worldCompleted = false;
+                    state.toxicity = { air: 100, water: 100, soil: 100 };
+                    discovered.clear();
+                    activeSpecies.clear();
+                    currentSpecies = WORLDS[1].species;
+                    document.getElementById('creature-layer').innerHTML = '';
+                    document.getElementById('viewport').style.backgroundImage = "url('assets/sunrise.gif')";
+                    document.getElementById('left-biome-name').textContent = WORLDS[1].name;
+                    document.getElementById('world-name-display').textContent = WORLDS[1].name;
+                    ['air', 'water', 'soil'].forEach(t => {
+                        document.getElementById(`label-${t}`).innerHTML = `${WORLDS[1].meterLabels[t].icon} ${WORLDS[1].meterLabels[t].label}`;
+                    });
+                    setStory('🌱 The barren crust of Aethra awaits your touch.', 'neutral');
+                    updateHUD();
+                    updateBiomeHealth();
+                    updateRegistryBar();
+                    populateRegistryModal();
+                    if (!music.muted) playTrack('title');
                 };
             }
 
@@ -1278,7 +1776,6 @@
                 updateRegistryBar();
                 checkLevelProgression();
             } else {
-                // Still update energy and cooldowns when completed, but no toxicity changes
                 state.energy = Math.min(200, state.energy + 1.0);
                 Object.keys(cooldowns).forEach(k => { if (cooldowns[k] > 0) cooldowns[k]--; });
                 updateHUD();
@@ -1315,8 +1812,8 @@
                 const lvData = wd.levels[target-1];
                 if (lvData) {
                     document.getElementById("viewport").style.backgroundImage = `url('${lvData.background}')`;
-                    if (target > old) setStory(`📡 Sector progressing: Level ${target} — ${lvData.description}`, 'good');
-                    else setStory(`⚠️ Biome degrading: Reverted to Level ${target}`, 'bad');
+                    if (target > old) setStory(`📡 Sector progressing: Stage ${target} — ${lvData.name}`, 'good');
+                    else setStory(`⚠️ Biome degrading: Reverted to Stage ${target}`, 'bad');
                 }
                 clearAnomaly();
             }
@@ -1327,18 +1824,34 @@
         // ── Discoveries ──
         function checkDiscoveries() {
             currentSpecies.forEach(spec => {
-                if (!discovered.has(spec.id) && state.toxicity[spec.req.type] <= spec.req.val) {
-                    discovered.add(spec.id);
-                    activeSpecies.add(spec.id);
-                    const el = document.createElement('div');
-                    el.id = `creature-${spec.id}`;
-                    el.className = 'creature-emoji';
-                    el.textContent = spec.icon;
-                    el.style.top = spec.pos.top;
-                    el.style.left = spec.pos.left;
-                    document.getElementById('creature-layer').appendChild(el);
-                    setStory(`🎉 New species discovered: ${spec.name}!`, 'good');
-                    populateRegistryModal();
+                if (!discovered.has(spec.id)) {
+                    let conditionMet = true;
+                    if (spec.req.type3) {
+                        conditionMet = state.toxicity[spec.req.type] <= spec.req.val &&
+                            state.toxicity[spec.req.type2] <= spec.req.val2 &&
+                            state.toxicity[spec.req.type3] <= spec.req.val3;
+                    } else if (spec.req.type2) {
+                        conditionMet = state.toxicity[spec.req.type] <= spec.req.val &&
+                            state.toxicity[spec.req.type2] <= spec.req.val2;
+                    } else {
+                        conditionMet = state.toxicity[spec.req.type] <= spec.req.val;
+                    }
+                    if (spec.req.level && state.level < spec.req.level) {
+                        conditionMet = false;
+                    }
+                    if (conditionMet) {
+                        discovered.add(spec.id);
+                        activeSpecies.add(spec.id);
+                        const el = document.createElement('div');
+                        el.id = `creature-${spec.id}`;
+                        el.className = 'creature-emoji';
+                        el.textContent = spec.icon;
+                        el.style.top = spec.pos.top;
+                        el.style.left = spec.pos.left;
+                        document.getElementById('creature-layer').appendChild(el);
+                        setStory(`🎉 New species discovered: ${spec.name}!`, 'good');
+                        populateRegistryModal();
+                    }
                 }
             });
         }
@@ -1356,7 +1869,10 @@
 
         // ── Anomalies ──
         function handleAnomalies() {
-            if (state.worldCompleted) return;
+            if (state.worldCompleted) {
+                document.getElementById('anomaly-message').innerHTML = `<span class="scanning-text"><span class="dish">🛰️</span> Mission complete. No anomalies detected.</span>`;
+                return;
+            }
 
             if (activeAnomaly) {
                 anomalyTimeLeft--;
@@ -1476,7 +1992,7 @@
             activeAnomaly = null;
             riskAssessed = false;
             document.getElementById('anomaly-panel').className = '';
-            document.getElementById('anomaly-message').textContent = 'Scanning surface for random events…';
+            document.getElementById('anomaly-message').innerHTML = `<span class="scanning-text"><span class="dish">🛰️</span> Scanning for anomalies...</span>`;
             document.getElementById('anomaly-timer').style.display = 'none';
             document.getElementById('anomaly-actions').innerHTML = '';
             if (msg) setStory(msg, type);
@@ -1633,6 +2149,8 @@
             document.getElementById('viewport').style.backgroundImage = `url('${lv.background}')`;
             setStory('⚡ Welcome to Tempest. Stabilise the chaos.', 'neutral');
 
+            if (!music.muted) playTrack('world2');
+
             updateHUD();
             updateBiomeHealth();
             updateRegistryBar();
@@ -1652,6 +2170,20 @@
             updateBiomeHealth();
             updateRegistryBar();
             setStory('🌱 The barren crust of Aethra awaits your touch.', 'neutral');
+
+            // If music isn't muted, try to init audio on first user interaction
+            if (!music.muted) {
+                document.addEventListener('click', function init() {
+                    if (!audioInitialized) {
+                        initAudio();
+                    }
+                }, { once: true });
+                document.addEventListener('touchstart', function init() {
+                    if (!audioInitialized) {
+                        initAudio();
+                    }
+                }, { once: true });
+            }
         };
     </script>
 </body>
