@@ -1625,10 +1625,10 @@
                     soil: { icon: '🌱', label: 'Soil', btn: 'Neutralize' }
                 },
                 levels: [
-                    { name: "The Barren Dawn", description: "Aethra lies silent and parched. The sky is choked with dust, the water stagnant. Your first task is to break the toxic crust and let the planet breathe again." },
-                    { name: "The Canopy Swamp", description: "As toxicity recedes, ancient seeds stir. Moisture returns to the air, and the first pioneer species take root. A new ecosystem is beginning to emerge." },
-                    { name: "The Oasis Lake", description: "The water is clearing. Lush vegetation spreads across the land, fed by purified rain. Aethra's heart is beating once more." },
-                    { name: "The Verdant Paradise", description: "Aethra is reborn. Vibrant forests, crystal waters, and a thriving biosphere—proof that life finds a way. Paradise is restored." }
+                    { name: "The Barren Dawn", description: "Aethra lies silent and parched. The sky is choked with dust, the water stagnant. Your first task is to break the toxic crust and let the planet breathe again.", background: "assets/sunrise.gif" },
+                    { name: "The Canopy Swamp", description: "As toxicity recedes, ancient seeds stir. Moisture returns to the air, and the first pioneer species take root. A new ecosystem is beginning to emerge.", background: "assets/Mountain Sunset.gif" },
+                    { name: "The Oasis Lake", description: "The water is clearing. Lush vegetation spreads across the land, fed by purified rain. Aethra's heart is beating once more.", background: "assets/Lake.gif" },
+                    { name: "The Verdant Paradise", description: "Aethra is reborn. Vibrant forests, crystal waters, and a thriving biosphere—proof that life finds a way. Paradise is restored.", background: "assets/Lake.gif" } // fallback
                 ],
                 species: [
                     { id: "microbe", name: "Airborne Microbe", icon: "🦠", desc: "Feeds on floating carbon residues, purifying the air.",
@@ -1663,9 +1663,9 @@
                     soil: { icon: '🌀', label: 'Resonance', btn: 'Calm' }
                 },
                 levels: [
-                    { name: "The Lightning Wastes", description: "Tempest's surface is a chaotic storm. Static electricity arcs across the sky, and the ground hums with destructive resonance. The first step is to ground the fury." },
-                    { name: "The Storm Veil", description: "The storm is weakening. Icy rain begins to fall, and the howling wind subsides. Ancient ice structures, hidden for eons, start to emerge." },
-                    { name: "The Frozen Haven", description: "The tempest is over. Snow blankets the land in silence. Crystals glitter in the weak sunlight, and pure meltwater carves rivers through the ice. A pristine world is reborn." }
+                    { name: "The Lightning Wastes", description: "Tempest's surface is a chaotic storm. Static electricity arcs across the sky, and the ground hums with destructive resonance. The first step is to ground the fury.", background: "assets/lightning slow.gif" },
+                    { name: "The Storm Veil", description: "The storm is weakening. Icy rain begins to fall, and the howling wind subsides. Ancient ice structures, hidden for eons, start to emerge.", background: "assets/sparkle clouds.gif" },
+                    { name: "The Frozen Haven", description: "The tempest is over. Snow blankets the land in silence. Crystals glitter in the weak sunlight, and pure meltwater carves rivers through the ice. A pristine world is reborn.", background: "assets/pixel snowy river.gif" }
                 ],
                 species: [
                     { id: "storm_sprite", name: "Storm Sprite", icon: "⚡", desc: "Dances in ionized air, purging static charge.",
@@ -1853,15 +1853,19 @@
             const wd = WORLDS[state.world];
             const maxLv = wd.levels.length;
 
-            if (Math.round(state.toxicity.air) === 0 && Math.round(state.toxicity.water) === 0 && Math.round(state.toxicity.soil) === 0) {
+            // ── Victory Check with epsilon ──
+            if (state.toxicity.air <= 0.1 && state.toxicity.water <= 0.1 && state.toxicity.soil <= 0.1) {
+                state.toxicity.air = 0;
+                state.toxicity.water = 0;
+                state.toxicity.soil = 0;
                 state.worldCompleted = true;
-                state.toxicity = { air: 0, water: 0, soil: 0 };
                 document.getElementById("viewport").style.backgroundImage = `url('${wd.levels[maxLv-1].background}')`;
                 showVictoryPanel();
                 updateHUD();
                 return;
             }
 
+            // ── Level progression ──
             let target = 1;
             if (avg <= 60 && avg > 20) target = 2;
             else if (avg <= 20) target = 3;
